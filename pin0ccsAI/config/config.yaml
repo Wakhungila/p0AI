@@ -1,0 +1,137 @@
+# pin0ccsAI — Main Configuration
+# Edit this file to match your local Kali setup
+
+project:
+  name: pin0ccsAI
+  version: "0.1.0"
+  data_dir: ./data
+  log_dir: ./logs
+  report_dir: ./reports
+
+# ─── Ollama Model Routing ─────────────────────────────────────────────────────
+ollama:
+  base_url: "http://localhost:11434"
+  timeout: 120
+
+models:
+  # Mode 1 — Active testing, payload generation, code analysis
+  tester: "qwen2.5-coder:7b"
+  # Mode 2 — Validation, debating, false-positive elimination
+  debator: "llama3.1:8b"
+  # Mode 3 — Quick parsing, classification, field extraction
+  strategy: "mistral:7b"
+  # Knowledge ingestion — mistral:7b replaces mixtral:8x7b (26GB → 4GB)
+  # Only used during `update-kb`, never during scan pipeline.
+  knowledge: "mistral:7b"
+
+# ─── External Tool Paths (Kali defaults) ─────────────────────────────────────
+tools:
+  subfinder: subfinder
+  assetfinder: assetfinder
+  httpx: httpx
+  nuclei: nuclei
+  ffuf: ffuf
+  gobuster: gobuster
+  nmap: nmap
+  whatweb: whatweb
+
+# ─── Recon Settings ──────────────────────────────────────────────────────────
+recon:
+  threads: 50
+  timeout: 10
+  resolve_dns: true
+  screenshot: false
+  tech_detect: true
+  wordlists:
+    dirs: /usr/share/wordlists/dirb/common.txt
+    subdomains: /usr/share/wordlists/amass/subdomains-top1mil-5000.txt
+    apis: ./data/wordlists/api_paths.txt
+
+# ─── Vulnerability Engine ────────────────────────────────────────────────────
+vuln:
+  nuclei_templates: ~/.local/nuclei-templates
+  nuclei_severity: [critical, high, medium]
+  ffuf_rate: 100
+  ffuf_timeout: 10
+  max_payload_mutations: 10   # reduced from 25 — sufficient for 8GB, avoids runaway
+  confidence_threshold: 0.75   # Debator min confidence to confirm a finding
+
+# ─── Strategy Settings ───────────────────────────────────────────────────────
+strategy:
+  high_value_patterns:
+    - /admin
+    - /api/v
+    - /graphql
+    - /checkout
+    - /payment
+    - /auth
+    - /login
+    - /reset
+    - /upload
+    - /internal
+    - /debug
+    - /_debug
+    - /swagger
+    - /actuator
+    - /.git
+  crown_jewel_score_threshold: 60
+
+# ─── Web3 Settings ───────────────────────────────────────────────────────────
+web3:
+  rpc_timeout: 30
+  max_functions_to_test: 50
+  check_signature_replay: true
+  check_access_control: true
+  check_reentrancy: true
+
+# ─── Knowledge Base ──────────────────────────────────────────────────────────
+knowledge:
+  db_path: ./data/kb/knowledge.db
+  sources:
+    - type: rss
+      url: "https://feeds.feedburner.com/HackerNews"
+      name: hackernews
+    - type: rss
+      url: "https://portswigger.net/research/rss"
+      name: portswigger
+  update_interval_hours: 24
+  max_entries: 10000
+
+# ─── Reporting ───────────────────────────────────────────────────────────────
+reporting:
+  formats: [markdown, html, json]
+  cvss_version: "3.1"
+  include_poc: true
+  include_remediation: true
+
+# ─── Performance / Resource Management ──────────────────────────────────────
+# Tuned for 8GB RAM, CPU-only, single Ollama instance.
+# One model active at a time. No overlapping inference.
+performance:
+  # LLM call ceilings per scan (hard limits enforced by LLMBudget)
+  max_mutation_calls: 8    # max batched mutation calls in Tester phase
+  max_business_calls: 1    # business logic reasoning calls (per phase)
+  max_cvss_calls: 10       # CVSS scoring calls (highest severity first)
+  # Payload cache TTL in hours
+  cache_ttl_hours: 72
+  # Exploit Memory tuning
+  memory_min_success_rate: 0.10
+  memory_max_results: 20
+  # Model lifecycle
+  # model_overlap_ok: false = unload then load (8GB-safe, default)
+  #                   true  = unload + load concurrently (16GB+ systems only)
+  model_overlap_ok: false
+
+# ─── Logging ─────────────────────────────────────────────────────────────────
+logging:
+  level: INFO          # DEBUG | INFO | WARNING | ERROR
+  format: json         # json | console
+  log_to_file: true
+  max_bytes: 10485760  # 10 MB
+  backup_count: 5
+
+# ─── Plugin System ───────────────────────────────────────────────────────────
+plugins:
+  enabled: true
+  plugin_dir: ./plugins
+  autoload: true

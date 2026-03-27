@@ -1,0 +1,23 @@
+# pin0ccsAI — Python Dependencies
+# Install: pip install -r requirements.txt
+
+# HTTP
+httpx[http2]>=0.27.0
+
+# CLI
+click>=8.1.7
+
+# Config
+pyyaml>=6.0.1
+
+# Logging
+structlog>=24.1.0
+
+# Async utilities (stdlib in Python 3.11+)
+# asyncio is stdlib
+
+# Optional: for faster async DNS resolution
+aiodns>=3.1.1
+
+# Optional: Web3 / smart contract interaction
+# web3>=6.15.0  # Uncomment if you need full Web3.py for contract calls

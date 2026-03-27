@@ -1,0 +1,10 @@
+{
+  "_comment": "Burp Suite cookie-header format",
+  "_comment2": "Copy the Cookie header value directly from Burp Repeater and paste here",
+  "_comment3": "Supports: session=abc; user_id=42; csrf=xyz (semicolon-separated)",
+  "label": "burp_session",
+  "cookie_header": "session=PASTE_FROM_BURP_HERE; user_id=123; csrf_token=PASTE_CSRF_HERE",
+  "headers": {
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36"
+  }
+}

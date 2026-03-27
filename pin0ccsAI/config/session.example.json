@@ -1,0 +1,15 @@
+{
+  "_comment": "pin0ccsAI auth session file — flat dict format",
+  "_comment2": "Remove _comment fields before use. Load with: --auth-file session.json",
+
+  "label": "admin_user",
+
+  "cookies": {
+    "session": "YOUR_SESSION_COOKIE_VALUE_HERE",
+    "csrf_token": "YOUR_CSRF_TOKEN_HERE"
+  },
+
+  "headers": {
+    "X-Custom-Header": "custom_value"
+  }
+}

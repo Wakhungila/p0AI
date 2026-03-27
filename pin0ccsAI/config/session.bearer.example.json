@@ -1,0 +1,5 @@
+{
+  "_comment": "Bearer token format — use when the app uses JWT or OAuth",
+  "label": "api_user",
+  "bearer_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.YOUR_JWT_PAYLOAD.YOUR_SIGNATURE"
+}
